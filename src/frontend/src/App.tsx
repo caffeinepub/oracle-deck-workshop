@@ -11,6 +11,7 @@ import { ProcessMap } from "./sections/ProcessMap";
 import { Reflection } from "./sections/Reflection";
 import { SymbolDraw } from "./sections/SymbolDraw";
 import { SymbolLibrary } from "./sections/SymbolLibrary";
+import { VisualReference } from "./sections/VisualReference";
 import { WitnessSpace } from "./sections/WitnessSpace";
 
 const SECTIONS = [
@@ -34,6 +35,12 @@ const SECTIONS = [
     label: "Symbol Library",
     icon: "📚",
     component: SymbolLibrary,
+  },
+  {
+    id: "visual",
+    label: "Visual Reference",
+    icon: "🎨",
+    component: VisualReference,
   },
   {
     id: "witness",

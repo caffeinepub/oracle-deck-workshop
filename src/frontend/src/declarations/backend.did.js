@@ -8,6 +8,17 @@
 
 import { IDL } from '@icp-sdk/core/candid';
 
+export const _CaffeineStorageCreateCertificateResult = IDL.Record({
+  'method' : IDL.Text,
+  'blob_hash' : IDL.Text,
+});
+export const _CaffeineStorageRefillInformation = IDL.Record({
+  'proposed_top_up_amount' : IDL.Opt(IDL.Nat),
+});
+export const _CaffeineStorageRefillResult = IDL.Record({
+  'success' : IDL.Opt(IDL.Bool),
+  'topped_up_amount' : IDL.Opt(IDL.Nat),
+});
 export const UserRole = IDL.Variant({
   'admin' : IDL.Null,
   'user' : IDL.Null,
@@ -23,24 +34,59 @@ export const DrawnSymbol = IDL.Record({
   'spiritAnimal' : IDL.Text,
   'timestamp' : Time,
 });
+export const ExternalBlob = IDL.Vec(IDL.Nat8);
 export const JournalEntry = IDL.Record({
   'title' : IDL.Text,
   'body' : IDL.Text,
-  'spiritAnimal' : IDL.Text,
+  'imageUrl' : IDL.Opt(IDL.Text),
   'timestamp' : Time,
+  'isPublic' : IDL.Bool,
 });
 
 export const idlService = IDL.Service({
+  '_caffeineStorageBlobIsLive' : IDL.Func(
+      [IDL.Vec(IDL.Nat8)],
+      [IDL.Bool],
+      ['query'],
+    ),
+  '_caffeineStorageBlobsToDelete' : IDL.Func(
+      [],
+      [IDL.Vec(IDL.Vec(IDL.Nat8))],
+      ['query'],
+    ),
+  '_caffeineStorageConfirmBlobDeletion' : IDL.Func(
+      [IDL.Vec(IDL.Vec(IDL.Nat8))],
+      [],
+      [],
+    ),
+  '_caffeineStorageCreateCertificate' : IDL.Func(
+      [IDL.Text],
+      [_CaffeineStorageCreateCertificateResult],
+      [],
+    ),
+  '_caffeineStorageRefillCashier' : IDL.Func(
+      [IDL.Opt(_CaffeineStorageRefillInformation)],
+      [_CaffeineStorageRefillResult],
+      [],
+    ),
+  '_caffeineStorageUpdateGatewayPrincipals' : IDL.Func([], [], []),
   '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
+  'addDrawHistory' : IDL.Func([IDL.Text], [], []),
   'addDrawnSymbol' : IDL.Func([IDL.Text], [], []),
   'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
-  'createJournalEntry' : IDL.Func([IDL.Text, IDL.Text, IDL.Text], [], []),
+  'createJournalEntry' : IDL.Func(
+      [IDL.Text, IDL.Text, IDL.Opt(IDL.Text), IDL.Bool],
+      [],
+      [],
+    ),
   'deleteJournalEntry' : IDL.Func([IDL.Text], [], []),
   'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
   'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
   'getDailyIntention' : IDL.Func([], [IDL.Opt(DailyIntention)], ['query']),
   'getDrawHistory' : IDL.Func([], [IDL.Vec(DrawnSymbol)], ['query']),
+  'getImage' : IDL.Func([IDL.Text], [IDL.Opt(ExternalBlob)], ['query']),
   'getJournalEntries' : IDL.Func([], [IDL.Vec(JournalEntry)], ['query']),
+  'getPublicJournalEntries' : IDL.Func([], [IDL.Vec(JournalEntry)], ['query']),
   'getUserProfile' : IDL.Func(
       [IDL.Principal],
       [IDL.Opt(UserProfile)],
@@ -48,12 +94,26 @@ export const idlService = IDL.Service({
     ),
   'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
   'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
+  'saveImage' : IDL.Func([IDL.Text, ExternalBlob], [], []),
   'setDailyIntention' : IDL.Func([IDL.Text], [], []),
+  'updateImage' : IDL.Func([IDL.Text, ExternalBlob], [], []),
+  'updateImageUrl' : IDL.Func([IDL.Text, IDL.Text], [], []),
 });
 
 export const idlInitArgs = [];
 
 export const idlFactory = ({ IDL }) => {
+  const _CaffeineStorageCreateCertificateResult = IDL.Record({
+    'method' : IDL.Text,
+    'blob_hash' : IDL.Text,
+  });
+  const _CaffeineStorageRefillInformation = IDL.Record({
+    'proposed_top_up_amount' : IDL.Opt(IDL.Nat),
+  });
+  const _CaffeineStorageRefillResult = IDL.Record({
+    'success' : IDL.Opt(IDL.Bool),
+    'topped_up_amount' : IDL.Opt(IDL.Nat),
+  });
   const UserRole = IDL.Variant({
     'admin' : IDL.Null,
     'user' : IDL.Null,
@@ -66,24 +126,63 @@ export const idlFactory = ({ IDL }) => {
     'spiritAnimal' : IDL.Text,
     'timestamp' : Time,
   });
+  const ExternalBlob = IDL.Vec(IDL.Nat8);
   const JournalEntry = IDL.Record({
     'title' : IDL.Text,
     'body' : IDL.Text,
-    'spiritAnimal' : IDL.Text,
+    'imageUrl' : IDL.Opt(IDL.Text),
     'timestamp' : Time,
+    'isPublic' : IDL.Bool,
   });
   
   return IDL.Service({
+    '_caffeineStorageBlobIsLive' : IDL.Func(
+        [IDL.Vec(IDL.Nat8)],
+        [IDL.Bool],
+        ['query'],
+      ),
+    '_caffeineStorageBlobsToDelete' : IDL.Func(
+        [],
+        [IDL.Vec(IDL.Vec(IDL.Nat8))],
+        ['query'],
+      ),
+    '_caffeineStorageConfirmBlobDeletion' : IDL.Func(
+        [IDL.Vec(IDL.Vec(IDL.Nat8))],
+        [],
+        [],
+      ),
+    '_caffeineStorageCreateCertificate' : IDL.Func(
+        [IDL.Text],
+        [_CaffeineStorageCreateCertificateResult],
+        [],
+      ),
+    '_caffeineStorageRefillCashier' : IDL.Func(
+        [IDL.Opt(_CaffeineStorageRefillInformation)],
+        [_CaffeineStorageRefillResult],
+        [],
+      ),
+    '_caffeineStorageUpdateGatewayPrincipals' : IDL.Func([], [], []),
     '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
+    'addDrawHistory' : IDL.Func([IDL.Text], [], []),
     'addDrawnSymbol' : IDL.Func([IDL.Text], [], []),
     'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
-    'createJournalEntry' : IDL.Func([IDL.Text, IDL.Text, IDL.Text], [], []),
+    'createJournalEntry' : IDL.Func(
+        [IDL.Text, IDL.Text, IDL.Opt(IDL.Text), IDL.Bool],
+        [],
+        [],
+      ),
     'deleteJournalEntry' : IDL.Func([IDL.Text], [], []),
     'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
     'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
     'getDailyIntention' : IDL.Func([], [IDL.Opt(DailyIntention)], ['query']),
     'getDrawHistory' : IDL.Func([], [IDL.Vec(DrawnSymbol)], ['query']),
+    'getImage' : IDL.Func([IDL.Text], [IDL.Opt(ExternalBlob)], ['query']),
     'getJournalEntries' : IDL.Func([], [IDL.Vec(JournalEntry)], ['query']),
+    'getPublicJournalEntries' : IDL.Func(
+        [],
+        [IDL.Vec(JournalEntry)],
+        ['query'],
+      ),
     'getUserProfile' : IDL.Func(
         [IDL.Principal],
         [IDL.Opt(UserProfile)],
@@ -91,7 +190,10 @@ export const idlFactory = ({ IDL }) => {
       ),
     'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
     'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
+    'saveImage' : IDL.Func([IDL.Text, ExternalBlob], [], []),
     'setDailyIntention' : IDL.Func([IDL.Text], [], []),
+    'updateImage' : IDL.Func([IDL.Text, ExternalBlob], [], []),
+    'updateImageUrl' : IDL.Func([IDL.Text, IDL.Text], [], []),
   });
 };
 

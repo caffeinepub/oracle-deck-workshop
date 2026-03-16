@@ -69,7 +69,8 @@ export function SymbolDraw() {
       await createEntry.mutateAsync({
         title: journalTitle,
         body: journalBody,
-        spiritAnimal: currentAnimal.name,
+        imageUrl: null,
+        isPublic: false,
       });
       toast.success("Journal entry saved.");
       setJournalOpen(false);

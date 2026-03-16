@@ -73,10 +73,16 @@ export function useCreateJournalEntry() {
     mutationFn: async ({
       title,
       body,
-      spiritAnimal,
-    }: { title: string; body: string; spiritAnimal: string }) => {
+      imageUrl,
+      isPublic,
+    }: {
+      title: string;
+      body: string;
+      imageUrl: string | null;
+      isPublic: boolean;
+    }) => {
       if (!actor) throw new Error("No actor");
-      return actor.createJournalEntry(title, body, spiritAnimal);
+      return actor.createJournalEntry(title, body, imageUrl, isPublic);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["journalEntries"] });

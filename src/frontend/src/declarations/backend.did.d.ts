@@ -12,32 +12,69 @@ import type { Principal } from '@icp-sdk/core/principal';
 
 export interface DailyIntention { 'date' : Time, 'text' : string }
 export interface DrawnSymbol { 'spiritAnimal' : string, 'timestamp' : Time }
+export type ExternalBlob = Uint8Array;
 export interface JournalEntry {
   'title' : string,
   'body' : string,
-  'spiritAnimal' : string,
+  'imageUrl' : [] | [string],
   'timestamp' : Time,
+  'isPublic' : boolean,
 }
 export type Time = bigint;
 export interface UserProfile { 'username' : string, 'email' : string }
 export type UserRole = { 'admin' : null } |
   { 'user' : null } |
   { 'guest' : null };
+export interface _CaffeineStorageCreateCertificateResult {
+  'method' : string,
+  'blob_hash' : string,
+}
+export interface _CaffeineStorageRefillInformation {
+  'proposed_top_up_amount' : [] | [bigint],
+}
+export interface _CaffeineStorageRefillResult {
+  'success' : [] | [boolean],
+  'topped_up_amount' : [] | [bigint],
+}
 export interface _SERVICE {
+  '_caffeineStorageBlobIsLive' : ActorMethod<[Uint8Array], boolean>,
+  '_caffeineStorageBlobsToDelete' : ActorMethod<[], Array<Uint8Array>>,
+  '_caffeineStorageConfirmBlobDeletion' : ActorMethod<
+    [Array<Uint8Array>],
+    undefined
+  >,
+  '_caffeineStorageCreateCertificate' : ActorMethod<
+    [string],
+    _CaffeineStorageCreateCertificateResult
+  >,
+  '_caffeineStorageRefillCashier' : ActorMethod<
+    [[] | [_CaffeineStorageRefillInformation]],
+    _CaffeineStorageRefillResult
+  >,
+  '_caffeineStorageUpdateGatewayPrincipals' : ActorMethod<[], undefined>,
   '_initializeAccessControlWithSecret' : ActorMethod<[string], undefined>,
+  'addDrawHistory' : ActorMethod<[string], undefined>,
   'addDrawnSymbol' : ActorMethod<[string], undefined>,
   'assignCallerUserRole' : ActorMethod<[Principal, UserRole], undefined>,
-  'createJournalEntry' : ActorMethod<[string, string, string], undefined>,
+  'createJournalEntry' : ActorMethod<
+    [string, string, [] | [string], boolean],
+    undefined
+  >,
   'deleteJournalEntry' : ActorMethod<[string], undefined>,
   'getCallerUserProfile' : ActorMethod<[], [] | [UserProfile]>,
   'getCallerUserRole' : ActorMethod<[], UserRole>,
   'getDailyIntention' : ActorMethod<[], [] | [DailyIntention]>,
   'getDrawHistory' : ActorMethod<[], Array<DrawnSymbol>>,
+  'getImage' : ActorMethod<[string], [] | [ExternalBlob]>,
   'getJournalEntries' : ActorMethod<[], Array<JournalEntry>>,
+  'getPublicJournalEntries' : ActorMethod<[], Array<JournalEntry>>,
   'getUserProfile' : ActorMethod<[Principal], [] | [UserProfile]>,
   'isCallerAdmin' : ActorMethod<[], boolean>,
   'saveCallerUserProfile' : ActorMethod<[UserProfile], undefined>,
+  'saveImage' : ActorMethod<[string, ExternalBlob], undefined>,
   'setDailyIntention' : ActorMethod<[string], undefined>,
+  'updateImage' : ActorMethod<[string, ExternalBlob], undefined>,
+  'updateImageUrl' : ActorMethod<[string, string], undefined>,
 }
 export declare const idlService: IDL.ServiceClass;
 export declare const idlInitArgs: IDL.Type[];
