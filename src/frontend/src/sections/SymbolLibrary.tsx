@@ -175,13 +175,22 @@ export function SymbolLibrary() {
               </DialogTitle>
             </DialogHeader>
             <div className="space-y-4 pt-2">
+              {/* Shadow note at the top */}
+              <p
+                className="text-xs italic leading-relaxed"
+                style={{ color: "oklch(var(--muted-foreground))" }}
+              >
+                Every animal carries both light and shadow aspects. Sit with the
+                full spectrum of this symbol's energy as you work with it.
+              </p>
+
               {/* Light qualities */}
               <div>
                 <p
                   className="text-xs uppercase tracking-widest mb-2"
                   style={{ color: "oklch(var(--primary) / 0.6)" }}
                 >
-                  Positive Qualities
+                  Light Aspects
                 </p>
                 <div className="flex flex-wrap gap-2">
                   {selected.qualities.map((q) => (
@@ -199,25 +208,28 @@ export function SymbolLibrary() {
                 </div>
               </div>
 
-              {/* Shadow note */}
-              <div
-                className="rounded-lg px-4 py-3 border text-sm"
-                style={{
-                  background: "oklch(0.14 0.02 290)",
-                  borderColor: "oklch(var(--border))",
-                  color: "oklch(var(--muted-foreground))",
-                }}
-              >
+              {/* Shadow qualities */}
+              <div>
                 <p
-                  className="text-xs uppercase tracking-widest mb-1"
+                  className="text-xs uppercase tracking-widest mb-2"
                   style={{ color: "oklch(0.65 0.12 310)" }}
                 >
-                  Shadow Aspect
+                  Shadow Aspects
                 </p>
-                <p className="italic text-sm">
-                  Every animal carries both light and shadow aspects. Sit with
-                  the full spectrum of this symbol’s energy as you work with it.
-                </p>
+                <div className="flex flex-wrap gap-2">
+                  {selected.shadowQualities.map((q) => (
+                    <Badge
+                      key={q}
+                      variant="outline"
+                      style={{
+                        borderColor: "oklch(0.65 0.12 310 / 0.4)",
+                        color: "oklch(0.65 0.12 310)",
+                      }}
+                    >
+                      {q}
+                    </Badge>
+                  ))}
+                </div>
               </div>
 
               <div
