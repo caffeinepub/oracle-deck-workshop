@@ -66,6 +66,18 @@ export function useGetJournalEntries() {
   });
 }
 
+export function useGetPublicJournalEntries() {
+  const { actor, isFetching } = useActor();
+  return useQuery<JournalEntry[]>({
+    queryKey: ["publicJournalEntries"],
+    queryFn: async () => {
+      if (!actor) return [];
+      return actor.getPublicJournalEntries();
+    },
+    enabled: !!actor && !isFetching,
+  });
+}
+
 export function useCreateJournalEntry() {
   const { actor } = useActor();
   const queryClient = useQueryClient();
@@ -86,6 +98,7 @@ export function useCreateJournalEntry() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["journalEntries"] });
+      queryClient.invalidateQueries({ queryKey: ["publicJournalEntries"] });
     },
   });
 }
@@ -100,6 +113,7 @@ export function useDeleteJournalEntry() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["journalEntries"] });
+      queryClient.invalidateQueries({ queryKey: ["publicJournalEntries"] });
     },
   });
 }
