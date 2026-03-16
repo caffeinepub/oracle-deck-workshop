@@ -15,13 +15,23 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
-import { Globe, ImageIcon, Loader2, Plus, Trash2, X } from "lucide-react";
+import {
+  Globe,
+  ImageIcon,
+  KeyRound,
+  Loader2,
+  LogIn,
+  Plus,
+  Trash2,
+  X,
+} from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { useRef, useState } from "react";
 import { toast } from "sonner";
 import { ExternalBlob } from "../backend";
 import { SectionWrapper } from "../components/SectionWrapper";
 import { useActor } from "../hooks/useActor";
+import { useInternetIdentity } from "../hooks/useInternetIdentity";
 import {
   useCreateJournalEntry,
   useDeleteJournalEntry,
@@ -42,6 +52,8 @@ export function Journal() {
   const createEntry = useCreateJournalEntry();
   const deleteEntry = useDeleteJournalEntry();
   const { actor } = useActor();
+  const { identity, login, isInitializing, isLoggingIn } =
+    useInternetIdentity();
   const [showForm, setShowForm] = useState(false);
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
@@ -74,6 +86,15 @@ export function Journal() {
     setUploading(true);
     try {
       let imageUrl: string | null = null;
+      let blob: ExternalBlob | null = null;
+
+      // Prepare blob and get its URL BEFORE creating the entry
+      if (imageFile) {
+        const arrayBuffer = await imageFile.arrayBuffer();
+        const bytes = new Uint8Array(arrayBuffer);
+        blob = ExternalBlob.fromBytes(bytes);
+        imageUrl = blob.getDirectURL();
+      }
 
       await createEntry.mutateAsync({
         title: title.trim(),
@@ -82,13 +103,9 @@ export function Journal() {
         isPublic,
       });
 
-      // Upload image after entry is created
-      if (imageFile && actor) {
-        const arrayBuffer = await imageFile.arrayBuffer();
-        const bytes = new Uint8Array(arrayBuffer);
-        const blob = ExternalBlob.fromBytes(bytes);
-        await actor.updateImage(title.trim(), blob);
-        imageUrl = blob.getDirectURL();
+      // Upload blob to storage after entry is created with the URL
+      if (blob && actor && imageUrl) {
+        await actor.saveImage(imageUrl, blob);
       }
 
       toast.success("Entry woven into your creation log.");
@@ -121,7 +138,67 @@ export function Journal() {
     >
       <div className="max-w-2xl space-y-6">
         <div>
-          {!showForm ? (
+          {!identity ? (
+            /* ── Auth gate ── */
+            <motion.div
+              data-ocid="journal.panel"
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="rounded-xl p-6 border text-center space-y-4"
+              style={{
+                background: "oklch(var(--card))",
+                borderColor: "oklch(var(--primary) / 0.25)",
+              }}
+            >
+              <div className="flex justify-center">
+                <div
+                  className="w-12 h-12 rounded-full flex items-center justify-center"
+                  style={{ background: "oklch(var(--primary) / 0.12)" }}
+                >
+                  <KeyRound
+                    className="h-5 w-5"
+                    style={{ color: "oklch(var(--primary))" }}
+                  />
+                </div>
+              </div>
+              <div>
+                <p
+                  className="font-display text-base font-semibold"
+                  style={{ color: "oklch(var(--foreground))" }}
+                >
+                  Begin your Creation Log
+                </p>
+                <p
+                  className="text-sm mt-1"
+                  style={{ color: "oklch(var(--muted-foreground))" }}
+                >
+                  Sign in with Internet Identity to start recording your
+                  reflections and save your work securely.
+                </p>
+              </div>
+              <Button
+                data-ocid="auth.primary_button"
+                onClick={login}
+                disabled={isInitializing || isLoggingIn}
+                style={{
+                  background: "oklch(var(--primary))",
+                  color: "oklch(var(--primary-foreground))",
+                }}
+              >
+                {isLoggingIn ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Signing in…
+                  </>
+                ) : (
+                  <>
+                    <LogIn className="mr-2 h-4 w-4" />
+                    Sign In to Continue
+                  </>
+                )}
+              </Button>
+            </motion.div>
+          ) : !showForm ? (
             <Button
               data-ocid="journal.primary_button"
               onClick={() => setShowForm(true)}
@@ -342,7 +419,9 @@ export function Journal() {
               className="text-sm mt-1"
               style={{ color: "oklch(var(--muted-foreground))" }}
             >
-              Record your first reflection above.
+              {identity
+                ? "Record your first reflection above."
+                : "Sign in above to begin your journey."}
             </p>
           </motion.div>
         ) : (

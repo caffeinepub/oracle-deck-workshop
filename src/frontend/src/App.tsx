@@ -1,8 +1,9 @@
 import { Toaster } from "@/components/ui/sonner";
 import { cn } from "@/lib/utils";
-import { Menu, X } from "lucide-react";
+import { Loader2, LogIn, LogOut, Menu, X } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
+import { useInternetIdentity } from "./hooks/useInternetIdentity";
 import { ArrivalIntent } from "./sections/ArrivalIntent";
 import { IntegrationClose } from "./sections/IntegrationClose";
 import { Journal } from "./sections/Journal";
@@ -67,9 +68,13 @@ type SectionId = (typeof SECTIONS)[number]["id"];
 export default function App() {
   const [active, setActive] = useState<SectionId>("arrival");
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { identity, login, clear, isInitializing, isLoggingIn } =
+    useInternetIdentity();
 
   const ActiveComponent =
     SECTIONS.find((s) => s.id === active)?.component ?? ArrivalIntent;
+
+  const authBusy = isInitializing || isLoggingIn;
 
   return (
     <div
@@ -182,6 +187,44 @@ export default function App() {
                 </button>
               ))}
             </nav>
+
+            {/* Mobile auth */}
+            <div className="px-4 pb-4">
+              {authBusy ? (
+                <div
+                  className="flex items-center gap-2 px-4 py-2"
+                  style={{ color: "oklch(var(--sidebar-foreground) / 0.5)" }}
+                >
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <span className="text-sm">Loading…</span>
+                </div>
+              ) : identity ? (
+                <button
+                  type="button"
+                  data-ocid="auth.toggle"
+                  onClick={clear}
+                  className="w-full flex items-center gap-2 px-4 py-2.5 rounded-xl text-left"
+                  style={{ color: "oklch(var(--sidebar-foreground) / 0.7)" }}
+                >
+                  <LogOut className="h-4 w-4" />
+                  <span className="text-sm">Sign Out</span>
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  data-ocid="auth.primary_button"
+                  onClick={login}
+                  className="w-full flex items-center gap-2 px-4 py-2.5 rounded-xl"
+                  style={{
+                    background: "oklch(var(--primary) / 0.15)",
+                    color: "oklch(var(--primary))",
+                  }}
+                >
+                  <LogIn className="h-4 w-4" />
+                  <span className="text-sm font-medium">Sign In</span>
+                </button>
+              )}
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
@@ -260,9 +303,56 @@ export default function App() {
 
           {/* Footer */}
           <div
-            className="p-4 border-t"
+            className="p-4 border-t space-y-3"
             style={{ borderColor: "oklch(var(--sidebar-border))" }}
           >
+            {/* Auth button */}
+            {authBusy ? (
+              <div
+                className="flex items-center gap-2 px-2 py-1.5"
+                style={{ color: "oklch(var(--sidebar-foreground) / 0.45)" }}
+              >
+                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                <span className="text-xs">Loading…</span>
+              </div>
+            ) : identity ? (
+              <div className="space-y-1">
+                <p
+                  className="text-xs px-2"
+                  style={{ color: "oklch(var(--primary) / 0.8)" }}
+                >
+                  ✦ Signed in
+                </p>
+                <button
+                  type="button"
+                  data-ocid="auth.toggle"
+                  onClick={clear}
+                  className="w-full flex items-center gap-2 px-2 py-1.5 rounded-lg text-left transition-colors hover:bg-sidebar-accent/50"
+                  style={{ color: "oklch(var(--sidebar-foreground) / 0.6)" }}
+                >
+                  <LogOut className="h-3.5 w-3.5" />
+                  <span className="text-xs">Sign Out</span>
+                </button>
+              </div>
+            ) : (
+              <button
+                type="button"
+                data-ocid="auth.primary_button"
+                onClick={login}
+                className="w-full flex items-center gap-2 px-3 py-2 rounded-lg transition-all"
+                style={{
+                  background: "oklch(var(--primary) / 0.12)",
+                  color: "oklch(var(--primary))",
+                  border: "1px solid oklch(var(--primary) / 0.25)",
+                }}
+              >
+                <LogIn className="h-3.5 w-3.5" />
+                <span className="text-xs font-medium">
+                  Sign In to save entries
+                </span>
+              </button>
+            )}
+
             <p
               className="text-xs text-center"
               style={{ color: "oklch(var(--sidebar-foreground) / 0.4)" }}
