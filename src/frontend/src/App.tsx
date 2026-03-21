@@ -5,6 +5,7 @@ import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
 import { useInternetIdentity } from "./hooks/useInternetIdentity";
 import { ArrivalIntent } from "./sections/ArrivalIntent";
+import { HubHome } from "./sections/HubHome";
 import { IntegrationClose } from "./sections/IntegrationClose";
 import { Journal } from "./sections/Journal";
 import { PatternInsights } from "./sections/PatternInsights";
@@ -14,20 +15,17 @@ import { SymbolDraw } from "./sections/SymbolDraw";
 import { SymbolLibrary } from "./sections/SymbolLibrary";
 import { VisualReference } from "./sections/VisualReference";
 import { WitnessSpace } from "./sections/WitnessSpace";
+import { YourDeck } from "./sections/YourDeck";
 
 const SECTIONS = [
+  { id: "hub", label: "Hub Home", icon: "🌀", component: HubHome },
   {
     id: "arrival",
     label: "Arrival & Intent",
     icon: "🌅",
     component: ArrivalIntent,
   },
-  {
-    id: "process",
-    label: "Process Map",
-    icon: "🗺️",
-    component: ProcessMap,
-  },
+  { id: "process", label: "Process Map", icon: "🗺️", component: ProcessMap },
   { id: "draw", label: "Symbol Draw", icon: "🂴", component: SymbolDraw },
   { id: "reflection", label: "Reflection", icon: "🔮", component: Reflection },
   { id: "journal", label: "Creation Log", icon: "🗂️", component: Journal },
@@ -43,12 +41,7 @@ const SECTIONS = [
     icon: "🎨",
     component: VisualReference,
   },
-  {
-    id: "witness",
-    label: "Witness Space",
-    icon: "👁️",
-    component: WitnessSpace,
-  },
+  { id: "witness", label: "Witness Space", icon: "👁️", component: WitnessSpace },
   {
     id: "patterns",
     label: "Pattern Insights",
@@ -61,18 +54,19 @@ const SECTIONS = [
     icon: "🕯️",
     component: IntegrationClose,
   },
+  { id: "deck", label: "Your Deck", icon: "🃏", component: YourDeck },
 ] as const;
 
 type SectionId = (typeof SECTIONS)[number]["id"];
 
 export default function App() {
-  const [active, setActive] = useState<SectionId>("arrival");
+  const [active, setActive] = useState<SectionId>("hub");
   const [mobileOpen, setMobileOpen] = useState(false);
   const { identity, login, clear, isInitializing, isLoggingIn } =
     useInternetIdentity();
 
   const ActiveComponent =
-    SECTIONS.find((s) => s.id === active)?.component ?? ArrivalIntent;
+    SECTIONS.find((s) => s.id === active)?.component ?? HubHome;
 
   const authBusy = isInitializing || isLoggingIn;
 
@@ -151,7 +145,7 @@ export default function App() {
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -20 }}
             transition={{ duration: 0.2 }}
-            className="md:hidden fixed inset-0 z-40 pt-14"
+            className="md:hidden fixed inset-0 z-40 pt-14 overflow-y-auto"
             style={{
               background: "oklch(var(--sidebar) / 0.98)",
               backdropFilter: "blur(12px)",
@@ -188,7 +182,6 @@ export default function App() {
               ))}
             </nav>
 
-            {/* Mobile auth */}
             <div className="px-4 pb-4">
               {authBusy ? (
                 <div
@@ -239,7 +232,6 @@ export default function App() {
             borderColor: "oklch(var(--sidebar-border))",
           }}
         >
-          {/* Logo */}
           <div
             className="p-6 border-b"
             style={{ borderColor: "oklch(var(--sidebar-border))" }}
@@ -261,7 +253,6 @@ export default function App() {
             </p>
           </div>
 
-          {/* Nav items */}
           <nav className="flex-1 p-3 space-y-0.5">
             {SECTIONS.map((section) => {
               const isActive = active === section.id;
@@ -301,12 +292,10 @@ export default function App() {
             })}
           </nav>
 
-          {/* Footer */}
           <div
             className="p-4 border-t space-y-3"
             style={{ borderColor: "oklch(var(--sidebar-border))" }}
           >
-            {/* Auth button */}
             {authBusy ? (
               <div
                 className="flex items-center gap-2 px-2 py-1.5"
@@ -321,7 +310,7 @@ export default function App() {
                   className="text-xs px-2"
                   style={{ color: "oklch(var(--primary) / 0.8)" }}
                 >
-                  ✦ Signed in
+                  ❆ Signed in
                 </p>
                 <button
                   type="button"

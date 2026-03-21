@@ -1,34 +1,22 @@
 # Oracle Deck Workshop
 
 ## Current State
-The app has 7 sections: Arrival & Intent, Symbol Draw, Reflection, Journal, Pattern Insights, Symbol Library, Integration Close. Content is functional but uses placeholder/brief text rather than the full participant guide copy.
+App has 10 navigation sections: Arrival & Intent, Process Map, Symbol Draw, Reflection, Creation Log, Symbol Library, Visual Reference, Witness Space, Pattern Insights, Integration Close. No Hub Home landing section. No "Your Deck" section with lesson cards.
 
 ## Requested Changes (Diff)
 
 ### Add
-- New **Process Map** section (section 2) showing the 6 phases (Symbol Exploration → Integration Close) with objectives and descriptions
-- New **Witness Space** section (section 6, optional) with sharing prompts and reflective feedback framing
-- Guided Creation Prompts panel added to Symbol Draw or as a sub-section within it
+- **Hub Home section** (🌀 Oracle Deck Workshop) as the first item in the sidebar navigation. It should be the default landing view, containing: welcome text / container introduction, a "How This Workshop Works" summary (self-paced, reflective, guided process), a care/disclaimer statement (ACleaverArt canon-friendly), and a brief intro note about using the Spirit Animal Library for inspiration.
+- **Your Deck section** in the sidebar (icon: 🃏 or 🂴, after Integration Close) displaying all 22 lessons as individual interactive cards. Each lesson card shows: lesson number + title, objective summary, Symbol Exploration, Visual Elements, Voice & Meaning, and Reflection — presented in an expandable card or modal. All 22 lessons must be included with full content.
 
 ### Modify
-- **Arrival & Intent**: Replace brief invocation with full welcome text, 3-bullet invitation, and 3 reflective check-in prompts
-- **Journal**: Rename nav label to "Creation Log"; update subtitle to reflect reflective record framing (intentions, inspirations, pattern noticing)
-- **Symbol Library**: Add usage tips panel (choose intuitively, remix symbols, reference don't restrict) with example Axolotl card showing positive/shadow/question
-- **Integration Close**: Expand with Phase 6 steps (Review & Reflect, Decide Next Steps, Final Reflection Prompts) and next-step ideas list
-- **Reflection**: Update subtitle and empty state to align with Phase 5 language (patterns, insights, connections)
-- **Pattern Insights**: Update framing copy to align with Phase 5 reflection language
-- **Nav order**: Arrival & Intent → Process Map → Symbol Draw (Guided Creation) → Creation Log → Symbol Library → Witness Space → Pattern Insights → Integration Close
+- **Sidebar navigation order** updated to: Hub Home → Arrival & Intent → Process Map → Symbol Draw → Reflection → Creation Log → Symbol Library → Visual Reference → Witness Space → Pattern Insights → Integration Close → (Your Deck at end or integrated).
+- Default active section changes from "arrival" to "hub" (Hub Home).
 
 ### Remove
-- Nothing removed; sections retained but reorganized
+- Nothing removed.
 
 ## Implementation Plan
-1. Update ArrivalIntent.tsx: full welcome text, invitation bullets, 3 check-in prompts
-2. Create ProcessMap.tsx: 6-phase staged creation path with objectives and descriptions
-3. Update SymbolDraw.tsx: add guided creation prompts panel above or alongside draw UI
-4. Rename Journal section label to "Creation Log", update subtitle
-5. Update SymbolLibrary.tsx: add usage tips section and shadow/positive qualities display in detail dialog
-6. Create WitnessSpace.tsx: sharing prompts, reflective feedback framing, optional presence note
-7. Update IntegrationClose.tsx: Phase 6 steps, next-step ideas, final reflection prompts
-8. Update Reflection.tsx: align language with Phase 5 framing
-9. Update App.tsx: add ProcessMap + WitnessSpace to SECTIONS, reorder nav
+1. Create `src/frontend/src/sections/HubHome.tsx` — landing section with welcome, how it works, care statement, Spirit Animal Library note.
+2. Create `src/frontend/src/sections/YourDeck.tsx` — section containing all 22 lesson cards as expandable/modal cards with full lesson content.
+3. Update `src/frontend/src/App.tsx` — add Hub Home as first section (default), add Your Deck as last section, update SECTIONS array.
